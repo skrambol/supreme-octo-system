@@ -6,8 +6,6 @@ int NO_OF_PUZZLES;
 FILE *FP;
 
 int **board;
-int *board_row;
-int *board_col;
 int dimension;
 
 void printBoard() {
@@ -26,29 +24,47 @@ void printBoard() {
 }
 
 int checkMove(int move_row, int move_col) {
-    if (board_row[move_row]) {
-        return 0;
+    int i, j;
+
+    //check rook-move
+    for (i=0; i<dimension; i++) {
+        if (board[move_row][i]) return 0;
+        if (board[i][move_col]) return 0;
     }
 
-    //check col
-    if (board_col[move_col]) {
-        return 0;
-    }
-
-    //check L
+    //check knight-move
     if (dimension < 3) {
         return 1;
     }
 
-    //implement legit knight move checking
+    for (i=1; i<=2; i++) {
+        for(j=2; j>=1; j--) {
+            if (move_row+i < dimension) {
+                if (move_col+j < dimension && board[move_row+i][move_col+j]) {
+                    return 0;
+                }
+                if (move_col-j > dimension && board[move_row+i][move_col-j]) {
+                    return 0;
+                }
+            }
+            else if (move_row-i > dimension) {
+                if (move_col+j < dimension && board[move_row-i][move_col+j]) {
+                    return 0;
+                }
+                if (move_col-j > dimension && board[move_row-i][move_col-j]) {
+                    return 0;
+                }
+            }
+        }
+    }
+
+    return 1;
 }
 
 void initializeBoard() {
     int i, j;
 
     board = (int **) malloc (sizeof(int *)*dimension);
-    board_row = (int *) malloc (sizeof(int *)*dimension);
-    board_col = (int *) malloc (sizeof(int *)*dimension);
 
     for (i=0; i<dimension; i++) {
         board[i] = (int *) malloc (sizeof(int)*dimension);
@@ -58,6 +74,10 @@ void initializeBoard() {
     }
 
     printBoard();
+}
+
+void backtrack() {
+    printf("backtracking...");
 }
 
 void initializeState() {
@@ -73,6 +93,7 @@ void initializeState() {
 
     for (i=0; i<NO_OF_PUZZLES; i++) {
         initializeBoard();
+        backtrack();
     }
 
     fclose(FP);
