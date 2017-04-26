@@ -6,13 +6,14 @@ int NO_OF_PUZZLES;
 FILE *FP;
 
 int **board;
+int **board_init;
 int dimension;
 int count_chancellor;
 
-void printBoard() {
+void printBoard(int **board, char *name) {
     int i, j;
 
-    printf("[LOG] board: \n");
+    printf("[LOG] %s: \n", name);
 
     for (i=0; i<dimension; i++) {
         for (j=0; j<dimension; j++) {
@@ -44,7 +45,7 @@ int checkMove(int move_row, int move_col) {
 
     for (i=1; i<=2; i++) {
         for(j=2; j>=1; j--) {
-            if (i==j) break;
+            if (i==j) continue;
             if (move_row+i < dimension) {
                 if (move_col+j < dimension && board[move_row+i][move_col+j]) {
                     printf("[LOG] invalid knight move at +%d, +%d\n",i ,j);
@@ -77,16 +78,19 @@ void initializeBoard() {
 
     count_chancellor = 0;
     board = (int **) malloc (sizeof(int *)*dimension);
+    board_init = (int **) malloc (sizeof(int *)*dimension);
 
     for (i=0; i<dimension; i++) {
         board[i] = (int *) malloc (sizeof(int)*dimension);
+        board_init[i] = (int *) malloc (sizeof(int)*dimension);
         for (j=0; j<dimension; j++) {
             fscanf(FP, "%d", &board[i][j]);
+            board_init[i][j] = board[i][j];
             if (board[i][j]) count_chancellor++;
         }
     }
 
-    printBoard();
+    printBoard(board, "board AND board_init");
 }
 
 int backtrack() {
@@ -99,7 +103,7 @@ int backtrack() {
         for (j=0; j<dimension; j++) {
             if (!board[i][j]) {
                 board[i][j] = checkMove(i,j);
-                printBoard();
+                printBoard(board, "board");
             }
         }
     }
