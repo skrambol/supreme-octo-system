@@ -1,105 +1,52 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define CHANCELLOR 1
 
 typedef struct node {
     int row;
     int col;
 } mov;
 
-int NO_OF_PUZZLES;
+int puzzles_count;
 FILE *in, *out;
 
 int **board;
 int dimension;
 int chancellor_count;
 
-void printBoard(int **board, char *name, int log) {
-    if (!log) return;
+void initializeBoard();
+void printBoard(int **, char *, int);
+int backtrack();
+mov initializeMove(int ,int);
+int isBefore(mov, mov);
+int checkMove(mov, int);
+int doMove(mov, int);
+
+void main() {
     int i, j;
 
-    printf("[LOG] %s: \n", name);
+    in = fopen("project.in", "r");
+    out = fopen("solutions.out", "w");
 
-    for (i=0; i<dimension; i++) {
-        for (j=0; j<dimension; j++) {
-            printf("%d ", board[i][j]);
+    fscanf(in, "%d \n", &puzzles_count);
+    printf("[LOG] puzzles_count: %d\n", puzzles_count);
+
+    for (i=0; i<puzzles_count; i++) {
+        printf("\n[LOG] PUZZLE-%d:\n", i);
+        fscanf(in, "%d \n", &dimension);
+        printf("[LOG] dimension: %d\n", dimension);
+        initializeBoard();
+        if (!backtrack()) {
+            printf("[LOG] there are no possible solutions\n");
         }
-        printf("\n");
-    }
-}
 
-int isBefore(mov current, mov new) {
-    return (
-        current.row*dimension + current.col <
-        new.row*dimension + new.col
-    );
-}
-
-mov initializeMove(int row, int col) {
-    mov move;
-
-    move.row = row;
-    move.col = col;
-
-    return move;
-}
-
-int doMove(mov move, int what_move) {
-    if (move.row < dimension && move.row > -1 && move.col < dimension && move.col > -1) {
-        board[move.row][move.col] = what_move;
-
-        what_move ? chancellor_count++ : chancellor_count--;
-        return 1;
-    }
-
-    return 0;
-}
-
-int checkMove(mov move, int log) {
-    int i, j;
-
-    if (log) printf("[LOG] move at: %d, %d\n", move.row, move.col);
-
-    //check rook-move
-    for (i=0; i<dimension; i++) {
-        if (board[move.row][i] || board[i][move.col]) {
-            if (log) printf("[LOG] invalid rook move\n");
-            return 0;
+        for(j=0; j<dimension; j++) {
+            free(board[j]);
         }
+        free(board);
     }
 
-    //check knight-move
-    if (dimension < 3) {
-        return 1;
-    }
-
-    for (i=1; i<=2; i++) {
-        for(j=2; j>=1; j--) {
-            if (i==j) continue;
-            if (move.row+i < dimension) {
-                if (move.col+j < dimension && board[move.row+i][move.col+j]) {
-                    if (log) printf("[LOG] invalid knight move at +%d, +%d\n",i ,j);
-                    return 0;
-                }
-                if (move.col-j > -1 && board[move.row+i][move.col-j]) {
-                    if (log) printf("[LOG] invalid knight move at +%d, -%d\n",i ,j);
-                    return 0;
-                }
-            }
-            if (move.row-i > -1) {
-                if (move.col+j < dimension && board[move.row-i][move.col+j]) {
-                    if (log) printf("[LOG] invalid knight move at -%d, +%d\n",i ,j);
-                    return 0;
-                }
-                if (move.col-j > -1 && board[move.row-i][move.col-j]) {
-                    if (log) printf("[LOG] invalid knight move at -%d, -%d\n",i ,j);
-                    return 0;
-                }
-            }
-        }
-    }
-
-    return 1;
+    fclose(in);
+    fclose(out);
 }
 
 void initializeBoard() {
@@ -117,6 +64,20 @@ void initializeBoard() {
     }
 
     printBoard(board, "board", 1);
+}
+
+void printBoard(int **board, char *name, int log) {
+    if (!log) return;
+    int i, j;
+
+    printf("[LOG] %s: \n", name);
+
+    for (i=0; i<dimension; i++) {
+        for (j=0; j<dimension; j++) {
+            printf("%d ", board[i][j]);
+        }
+        printf("\n");
+    }
 }
 
 int backtrack() {
@@ -230,8 +191,7 @@ int backtrack() {
         }
 
         else {
-            nth_move--;
-            if (nth_move==0) break;
+            if (!--nth_move) break;
 
             candidate = solutions[nth_move][tos[nth_move]];
             doMove(candidate, 0);
@@ -241,36 +201,85 @@ int backtrack() {
         }
     }
 
+    for(i=0; i<dimension+2; i++) {
+        free(solutions[i]);
+    }
     free(solutions);
 
     printf("[LOG] backtracked with %d solutions...\n", solutions_count);
     return solutions_count;
 }
 
-void main() {
+mov initializeMove(int row, int col) {
+    mov move;
+
+    move.row = row;
+    move.col = col;
+
+    return move;
+}
+
+int checkMove(mov move, int log) {
     int i, j;
 
-    in = fopen("project.in", "r");
-    out = fopen("solutions.out", "w");
+    if (log) printf("[LOG] move at: %d, %d\n", move.row, move.col);
 
-    fscanf(in, "%d \n", &NO_OF_PUZZLES);
-    printf("[LOG] NO_OF_PUZZLES: %d\n", NO_OF_PUZZLES);
-
-    for (i=0; i<NO_OF_PUZZLES; i++) {
-        printf("\n[LOG] PUZZLE-%d:\n", i);
-        fscanf(in, "%d \n", &dimension);
-        printf("[LOG] dimension: %d\n", dimension);
-        initializeBoard();
-        if (!backtrack()) {
-            printf("[LOG] there are no possible solutions\n");
+    //check rook-move
+    for (i=0; i<dimension; i++) {
+        if (board[move.row][i] || board[i][move.col]) {
+            if (log) printf("[LOG] invalid rook move\n");
+            return 0;
         }
-
-        for(j=0; j<dimension; j++) {
-            free(board[j]);
-        }
-        free(board);
     }
 
-    fclose(in);
-    fclose(out);
+    //check knight-move
+    if (dimension < 3) {
+        return 1;
+    }
+
+    for (i=1; i<=2; i++) {
+        for(j=2; j>=1; j--) {
+            if (i==j) continue;
+            if (move.row+i < dimension) {
+                if (move.col+j < dimension && board[move.row+i][move.col+j]) {
+                    if (log) printf("[LOG] invalid knight move at +%d, +%d\n",i ,j);
+                    return 0;
+                }
+                if (move.col-j > -1 && board[move.row+i][move.col-j]) {
+                    if (log) printf("[LOG] invalid knight move at +%d, -%d\n",i ,j);
+                    return 0;
+                }
+            }
+            if (move.row-i > -1) {
+                if (move.col+j < dimension && board[move.row-i][move.col+j]) {
+                    if (log) printf("[LOG] invalid knight move at -%d, +%d\n",i ,j);
+                    return 0;
+                }
+                if (move.col-j > -1 && board[move.row-i][move.col-j]) {
+                    if (log) printf("[LOG] invalid knight move at -%d, -%d\n",i ,j);
+                    return 0;
+                }
+            }
+        }
+    }
+
+    return 1;
+}
+
+int isBefore(mov current, mov new) {
+    return (
+        current.row*dimension + current.col <
+        new.row*dimension + new.col
+    );
+}
+
+int doMove(mov move, int what_move) {
+    if (move.row < dimension && move.row > -1 && move.col < dimension && move.col > -1) {
+        board[move.row][move.col] = what_move;
+
+        what_move ? chancellor_count++ : chancellor_count--;
+        return 1;
+    }
+
+    return 0;
 }
