@@ -14,7 +14,7 @@ int dimension;
 int chancellor_count;
 
 void initializeBoard();
-void printBoard(int **, char *, int);
+void printBoard(int **, char *);
 int backtrack();
 mov initializeMove(int ,int);
 int isBefore(mov, mov);
@@ -63,11 +63,10 @@ void initializeBoard() {
         }
     }
 
-    printBoard(board, "board", 1);
+    printBoard(board, "board");
 }
 
-void printBoard(int **board, char *name, int log) {
-    if (!log) return;
+void printBoard(int **board, char *name) {
     int i, j;
 
     printf("[LOG] %s: \n", name);
@@ -155,31 +154,18 @@ int backtrack() {
                         printf("[LOG] steps: %d, %d\n", solutions[i][tos[i]].row, solutions[i][tos[i]].col);
             }
 
-            else if (nth_move==1) { //initialize first move
-                for (i=dimension-1; i>-1; i--) {
-                    for (j=dimension-1; j>-1; j--) {
-                        if (!board[i][j]) {
-                            mov move = initializeMove(i,j);
-                            if (checkMove(move, 0)) {
-                                tos[nth_move]++;
-                                solutions[nth_move][tos[nth_move]] = move;
-                                if (log_move) printf("[LOG] %d-th stack; tos @ %d; init(%d, %d)\n", nth_move, tos[nth_move], move.row, move.col);
-                            }
-                        }
-                    }
-                }
-            }
-
             else {
-                candidate = solutions[nth_move-1][tos[nth_move-1]];
-                doMove(candidate, 1);
-                if (log_move) printf("[LOG] %d-th stack; tos @ %d; move(%d, %d)\n", nth_move-1, tos[nth_move-1], candidate.row, candidate.col);
+                if (nth_move > 1) {
+                    candidate = solutions[nth_move-1][tos[nth_move-1]];
+                    doMove(candidate, 1);
+                    if (log_move) printf("[LOG] %d-th stack; tos @ %d; move(%d, %d)\n", nth_move-1, tos[nth_move-1], candidate.row, candidate.col);
+                }
 
                 for (i=dimension-1; i>-1; i--) {
                     for (j=dimension-1; j>-1; j--) {
                         if (!board[i][j]) {
                             mov move = initializeMove(i,j);
-                            if (checkMove(move, 0) && isBefore(candidate, move)) {
+                            if (checkMove(move, 0) && (nth_move == 1 || isBefore(candidate, move)) ) {
                                 tos[nth_move]++;
                                 solutions[nth_move][tos[nth_move]] = move;
                                 if (log_move) printf("[LOG] %d-th stack; tos @ %d; add(%d, %d)\n", nth_move, tos[nth_move], move.row, move.col);
@@ -266,9 +252,9 @@ int checkMove(mov move, int log) {
     return 1;
 }
 
-int isBefore(mov current, mov new) {
+int isBefore(mov prev, mov new) {
     return (
-        current.row*dimension + current.col <
+        prev.row*dimension + prev.col <
         new.row*dimension + new.col
     );
 }
