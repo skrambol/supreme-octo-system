@@ -145,8 +145,10 @@ int backtrack() {
             if(log) printf("[LOG] now at %d-th stack\n", nth_move);
 
             if (nth_move==dimension+1) {
-                candidate = solutions[nth_move-1][tos[nth_move-1]];
-                doMove(candidate, PLACE_CHANCELLOR);
+                if (chancellor_count < dimension) {
+                    candidate = solutions[nth_move-1][tos[nth_move-1]];
+                    doMove(candidate, PLACE_CHANCELLOR);
+                }
 
                 fprintf(out, "%dth solution\n", ++solutions_count);
 
