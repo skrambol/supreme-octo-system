@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define REMOVE_CHANCELLOR 0
+#define INIT_CHANCELLOR 1
+#define PLACE_CHANCELLOR 2
 
 typedef struct node {
     int row;
@@ -87,12 +90,26 @@ int backtrack() {
 
     printf("[LOG] backtracking...\n");
 
+    solutions = (mov **) malloc (sizeof(mov *)*(dimension+2));
+    for(i=0; i<dimension+2; i++) {
+        solutions[i] = (mov *) malloc (sizeof(mov )*(dimension*dimension+2));
+    }
+
+    start = chancellor_count;
+    nth_move = start;
+    log_move = 0;
+    log = 0;
+    tos[start] = 1;
+    solutions_count = 0;
+
     if (chancellor_count > dimension) {
         return 0;
     }
 
-    if (chancellor_count == dimension) {
+    if (chancellor_count) {
+        if (log) printf("[LOG] there is an initial chancellor\n");
         int board_temp[dimension][dimension];
+        int nth_move_temp = 0;
 
         for (i=0; i<dimension; i++) {
             for (j=0; j<dimension; j++) {
@@ -106,37 +123,30 @@ int backtrack() {
                 if (board_temp[i][j]) {
                     mov move = initializeMove(i, j);
                     if(checkMove(move, 1)) {
-                        board[i][j] = 1;
+                        nth_move_temp++;
+                        tos[nth_move_temp] = 1;
+                        doMove(move, INIT_CHANCELLOR);
+                        solutions[nth_move_temp][1] = move;
+                        if (log_move) printf("[LOG] %d-th stack; tos @ %d; init(%d, %d)\n", nth_move_temp, tos[nth_move_temp], move.row, move.col);
                     }
                     else {
                         return 0;
                     }
                 }
-
             }
         }
     }
-
-    solutions = (mov **) malloc (sizeof(mov *)*(dimension+2));
-    for(i=0; i<dimension+2; i++) {
-        solutions[i] = (mov *) malloc (sizeof(mov )*(dimension*dimension+2));
-    }
-
-    start = chancellor_count;
-    nth_move = start;
-    log_move = 0;
-    log = 0;
-    tos[start] = 1;
-    solutions_count = 0;
 
     while(tos[start]>0) {
         if (tos[nth_move]>0) {
             nth_move++;
             tos[nth_move] = 0;
 
+            if(log) printf("[LOG] now at %d-th stack\n", nth_move);
+
             if (nth_move==dimension+1) {
                 candidate = solutions[nth_move-1][tos[nth_move-1]];
-                doMove(candidate, 1);
+                doMove(candidate, PLACE_CHANCELLOR);
 
                 fprintf(out, "%dth solution\n", ++solutions_count);
 
@@ -155,9 +165,9 @@ int backtrack() {
             }
 
             else {
-                if (nth_move > 1) {
+                if (nth_move >= start+1) {
                     candidate = solutions[nth_move-1][tos[nth_move-1]];
-                    doMove(candidate, 1);
+                    if (nth_move > start+1) doMove(candidate, PLACE_CHANCELLOR);
                     if (log_move) printf("[LOG] %d-th stack; tos @ %d; move(%d, %d)\n", nth_move-1, tos[nth_move-1], candidate.row, candidate.col);
                 }
 
@@ -180,7 +190,7 @@ int backtrack() {
             if (!--nth_move) break;
 
             candidate = solutions[nth_move][tos[nth_move]];
-            doMove(candidate, 0);
+            doMove(candidate, REMOVE_CHANCELLOR);
             if (log_move) printf("[LOG] %d-th stack; tos @ %d; undo(%d, %d)\n", nth_move, tos[nth_move], candidate.row, candidate.col);
 
             tos[nth_move]--;
@@ -254,8 +264,7 @@ int checkMove(mov move, int log) {
 
 int isBefore(mov prev, mov new) {
     return (
-        prev.row*dimension + prev.col <
-        new.row*dimension + new.col
+        board[prev.row][prev.col] == INIT_CHANCELLOR || (prev.row*dimension + prev.col < new.row*dimension + new.col)
     );
 }
 
