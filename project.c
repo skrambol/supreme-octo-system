@@ -1,3 +1,10 @@
+/*
+   CMSC 142 C-2L
+   N-Chancellors Milestone 1
+   Bayeta, Reynaldo
+   Orias, Darius
+   Templado, Christopher Claude
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -86,36 +93,6 @@ int backtrack() {
     mov candidate, **solutions;
 
     printf("[LOG] backtracking...\n");
-
-    if (chancellor_count > dimension) {
-        return 0;
-    }
-
-    if (chancellor_count == dimension) {
-        int board_temp[dimension][dimension];
-
-        for (i=0; i<dimension; i++) {
-            for (j=0; j<dimension; j++) {
-                board_temp[i][j] = board[i][j];
-                board[i][j] = 0;
-            }
-        }
-
-        for (i=0; i<dimension; i++) {
-            for (j=0; j<dimension; j++) {
-                if (board_temp[i][j]) {
-                    mov move = initializeMove(i, j);
-                    if(checkMove(move, 1)) {
-                        board[i][j] = 1;
-                    }
-                    else {
-                        return 0;
-                    }
-                }
-
-            }
-        }
-    }
 
     solutions = (mov **) malloc (sizeof(mov *)*(dimension+2));
     for(i=0; i<dimension+2; i++) {
