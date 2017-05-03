@@ -138,15 +138,13 @@ int backtrack() {
                     if (log_move) printf("[LOG] %d-th stack; tos @ %d; move(%d, %d)\n", nth_move-1, tos[nth_move-1], candidate.row, candidate.col);
                 }
 
-                for (i=dimension-1; i>-1; i--) {
-                    for (j=dimension-1; j>-1; j--) {
-                        if (!board[i][j]) {
-                            mov move = initializeMove(i,j);
-                            if (checkMove(move, 0) && (nth_move == 1 || isBefore(candidate, move)) ) {
-                                tos[nth_move]++;
-                                solutions[nth_move][tos[nth_move]] = move;
-                                if (log_move) printf("[LOG] %d-th stack; tos @ %d; add(%d, %d)\n", nth_move, tos[nth_move], move.row, move.col);
-                            }
+                for (j=dimension-1; j>-1; j--) {
+                    if (!board[nth_move-1][j]) {
+                        mov move = initializeMove(nth_move-1,j);
+                        if (checkMove(move, 0)) {
+                            tos[nth_move]++;
+                            solutions[nth_move][tos[nth_move]] = move;
+                            if (log_move) printf("[LOG] %d-th stack; tos @ %d; add(%d, %d)\n", nth_move, tos[nth_move], move.row, move.col);
                         }
                     }
                 }
