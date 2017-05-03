@@ -111,6 +111,8 @@ int backtrack() {
         int board_temp[dimension][dimension];
         int nth_move_temp = 0;
 
+        chancellor_count = 0;
+
         for (i=0; i<dimension; i++) {
             for (j=0; j<dimension; j++) {
                 board_temp[i][j] = board[i][j];
