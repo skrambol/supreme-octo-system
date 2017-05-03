@@ -86,14 +86,9 @@ int backtrack() {
     int log_move, log;
     int i, j, start, nth_move, solutions_count;
     int tos[dimension+2];
-    mov candidate, **solutions;
+    mov candidate, solutions[dimension+2][dimension*dimension+2];
 
     printf("[LOG] backtracking...\n");
-
-    solutions = (mov **) malloc (sizeof(mov *)*(dimension+2));
-    for(i=0; i<dimension+2; i++) {
-        solutions[i] = (mov *) malloc (sizeof(mov )*(dimension*dimension+2));
-    }
 
     start = chancellor_count;
     nth_move = start;
@@ -200,11 +195,6 @@ int backtrack() {
             tos[nth_move]--;
         }
     }
-
-    for(i=0; i<dimension+2; i++) {
-        free(solutions[i]);
-    }
-    free(solutions);
 
     printf("[LOG] backtracked with %d solutions...\n", solutions_count);
     return solutions_count;
