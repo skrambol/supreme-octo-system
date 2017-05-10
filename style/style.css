@@ -4,9 +4,24 @@ body {
     display: block;
 }
 
+#nav-title{
+	padding-left: 10px;
+}
+
+#nav-btn{
+	margin-top: 10px;
+	margin-right: 10px;
+}
+
 #board-div{
-	min-height: 50vh;
+	min-height: 75vh;
 	padding: 20px;
+	background: white;
+}
+
+#solution-div{
+	min-height: 80vh;
+	margin-top: 20px;
 	background: white;
 }
 
@@ -26,4 +41,8 @@ body {
 
 .tile-white{
 	background: #fce4d6;
+}
+
+.tile-invalid{
+	background: red;
 }
