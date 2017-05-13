@@ -79,6 +79,9 @@ var solver = {
 						move_candidate = move_solutions[nth_move - 1][tos[nth_move - 1]];
 						solver.doMove(chancellor_board, chancellor_count, move_candidate, dimension, PLACE_CHANCELLOR);
 
+						solutions_count++;
+						if (log) console.log("[Solution LOG] solutions_count: " + solutions_count);
+
 						if (log)
                     		for(i=start+1; i<=dimension; i++)
                         		console.log("[LOG] steps: " + move_solutions[i][tos[i]].row + ", " + move_solutions[i][tos[i]].col + "");
@@ -94,7 +97,7 @@ var solver = {
 						for (j = dimension - 1; j > -1; j--) {
 							if (chancellor_board[i][j] == 0) {
 								move = solver.initMove(i, j);
-								if (solver.checkMove(chancellor_board, move, log) || solver.isBefore(chancellor_board, dimension, move_candidate, move)) {
+								if (solver.checkMove(chancellor_board, move, log) && (nth_move == 1 || solver.isBefore(chancellor_board, dimension, move_candidate, move))) {
 									tos[nth_move]++;
 									move_solutions[nth_move][tos[nth_move]] = move;
 									if (log_move) console.log("[LOG] " + nth_move + "-th stack; tos @ " + tos[nth_move] + "; add(" + move.row + ", " + move.col + ")");
@@ -141,7 +144,7 @@ var solver = {
 	checkMove : function(board, move, log) {
 		if (log) console.log("[LOG] move at: %d, %d\n", move.row, move.col);
 
-		return (chancellor.checkRookMove(board, move.row, move.col) && chancellor.checkKnightMove(board, move.row, move.col)) ? true : false;
+		return (chancellor.checkRookMove(board, move.row, move.col) && chancellor.checkKnightMove(board, move.row, move.col));
 	},
 
 	doMove : function(board, count, move, dimension, what_move) {
