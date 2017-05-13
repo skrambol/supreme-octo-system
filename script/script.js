@@ -32,7 +32,7 @@ var chancellor = {
 
 		$('#solve-btn')
 			.click(function(){
-				chancellor.solveTable(chancellor.board);				
+				chancellor.solveTable();				
 			});
 
 		$('body').on('click', '.tile', function(){
@@ -46,9 +46,9 @@ var chancellor = {
 					}
 				}
 
-				if(!chancellor.checkRookMove(x,y) && chancellor.board[x][y]==0){
+				if(!chancellor.checkRookMove(chancellor.board, x,y) && chancellor.board[x][y]==0){
 					$(this).addClass("tile-invalid");	
-				}else if(!chancellor.checkKnightMove(x,y) && chancellor.board[x][y]==0){
+				}else if(!chancellor.checkKnightMove(chancellor.board, x,y) && chancellor.board[x][y]==0){
 					$(this).addClass("tile-invalid");	
 				}
 				
@@ -83,18 +83,17 @@ var chancellor = {
 
 	},
 
-	checkRookMove : function(x, y){
+	checkRookMove : function(board, x, y){
 		var arrayColumn = (arr, n) => arr.map(x => x[n]);
 
-		if(~chancellor.board[x].indexOf(1)) return false;
-		if(~arrayColumn(chancellor.board, y).indexOf(1)) return false;
+		if(~board[x].indexOf(1)) return false;
+		if(~arrayColumn(board, y).indexOf(1)) return false;
 
 		return true;
 	},
 
-	checkKnightMove : function(x, y){
-		var board = chancellor.board,
-			dimension = board.length,
+	checkKnightMove : function(board, x, y){
+		var dimension = board.length,
 			i, j;
 		
 		if (dimension < 3) {
@@ -153,8 +152,8 @@ var chancellor = {
 		}
 	},
 
-	solveTable : function(table){
-		//
+	solveTable : function(){
+		solver.init(chancellor);
 	}
 
 }
