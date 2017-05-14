@@ -7,9 +7,9 @@ $(document).ready( function () {
 var chancellor = {
 	board : [],
 
-	count : 0,
+	solutions : [],
 
-	win_flag : false,
+	count : 0,
 
 	init : function(){
 
@@ -27,12 +27,25 @@ var chancellor = {
 
 		$('#reset-btn')
 			.click(function(){
-				chancellor.createTable('#board', chancellor.board.length);				
+				$('#chancellor-left').removeClass("s6");
+				$('#chancellor-left').addClass("s12");
+				$('#chancellor-right').hide();			
+				chancellor.createTable('#board', chancellor.board.length);	
 			});
 
 		$('#solve-btn')
 			.click(function(){
+				$('#chancellor-left').removeClass("s12");
+				$('#chancellor-left').addClass("s6");
+				$('#chancellor-right').show();
 				chancellor.solveTable();				
+			});
+
+		$('#close-btn')
+			.click(function(){
+				$('#chancellor-left').removeClass("s6");
+				$('#chancellor-left').addClass("s12");
+				$('#chancellor-right').hide();		
 			});
 
 		$('body').on('click', '.tile', function(){
@@ -75,8 +88,18 @@ var chancellor = {
 				}
 
 				if(chancellor.count == chancellor.board.length && !$('.tile').hasClass('tile-invalid')){
-					swal("YOU WIN");
-					$('#reset-btn').click();
+					swal({
+						title: "YOU WIN",
+						text: "Game Over",
+						type: "success",
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Confirm",
+						closeOnConfirm: false
+					},
+					function(){
+						swal.close();
+						$('#reset-btn').click();
+					});
 				}
 
 		});
@@ -131,12 +154,11 @@ var chancellor = {
 		return true;
 	},
 
-	createTable : function(element, dimensions){
+	createTable : function(element, dimensions, sol_flag){
 		$(element).empty();
 
 		chancellor.board = [];
 		chancellor.count = 0;
-		chancellor.win_flag = false;
 
 		for(var i=0; i<dimensions; i++){
 			chancellor.board[i] = [];
@@ -146,9 +168,12 @@ var chancellor = {
 				chancellor.board[i][j] = 0;
 
 				var _class = (i+j)%2 ? "tile-white": "tile-black";
+				var _id = (sol_flag) ? 'id="sol-'+i+'-'+j+'"' : '';
+				var _click = (sol_flag) ? 'sol-tile ' : 'tile ';
+
 				$(element)
 					.append([
-						'<a class="tile ',_class,' waves-effect ',
+						'<a ',_id,' class="',_click, _class,' waves-effect ',
 						' waves-light btn" x=',i,' y=',j,' >',
 						'&nbsp;</a>'
 					].join(''));
@@ -158,8 +183,63 @@ var chancellor = {
 		}
 	},
 
+	createPagination : function(count, callback){
+		$('#pagination').empty();
+		$('#pagination').materializePagination({
+			align: 'center',
+			lastPage:  count,
+			firstPage:  1,
+			useUrlParameter: false,
+			onClickCallback: function(page_no){
+				if(callback) callback(page_no);
+			}
+		}); 
+	},
+
 	solveTable : function(){
-		solver.init(chancellor);
+		var board_copy = JSON.parse(JSON.stringify(chancellor.board)),
+			count_copy = chancellor.count,
+			solution = solver.init(chancellor);
+
+		if(!solution.count){
+			$('#solution-div').hide();
+			$('#no-solution-div').show();
+			chancellor.board = board_copy;
+			chancellor.count = count_copy;	
+			return;
+		}else{
+			$('#solution-div').show();
+			$('#no-solution-div').hide();
+		}
+
+		$('#sol-count').empty();
+		$('#sol-count').html(solution.count);
+
+		chancellor.solutions = solution.boards;
+
+		chancellor.createTable('#sol-board', chancellor.board.length, true);
+		
+		chancellor.createPagination(solution.count, function(index){
+			var sol_board = chancellor.solutions[index-1],
+				dimensions = sol_board.length;
+
+			for(var i=0; i<dimensions; i++){
+				for(var j=0; j<dimensions; j++){
+					// console.log("i:"+i + " j:" +j + "--->" + sol_board[i][j]);
+					var element = $('#sol-'+i+'-'+j),
+						sol_value = sol_board[i][j];
+
+					if(sol_value==0) element.html('&nbsp;');
+					else if(sol_value==1) element.html('C');
+					else if(sol_value==2){
+						element.html('X');
+					}
+				}
+			}
+		});		
+
+		chancellor.board = board_copy;
+		chancellor.count = count_copy;		
 	}
 
 }

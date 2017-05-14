@@ -7,7 +7,7 @@ var PLACE_CHANCELLOR 	= 2;
 var solver = {
 
 	init : function(chancellor) {
-		solver.backtrack(chancellor);
+		return solver.backtrack(chancellor);
 	},
 
 	backtrack : function(chancellor) {
@@ -120,7 +120,7 @@ var solver = {
 			}
 		}
 		console.log("[LOG] Backtracked with " + solutions_count + " solution/s!");
-		return solutions_count;
+		return { count : solutions_count, boards : board_solutions};
 	},
 
 	initTos : function(tos, dimension) {

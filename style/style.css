@@ -19,13 +19,17 @@ body {
 	background: white;
 }
 
-#solution-div{
-	min-height: 80vh;
+#sol-board-div{
+	min-height: 65vh;
+}
+
+#solution-div, #no-solution-div{
+	min-height: 85vh;
 	margin-top: 20px;
 	background: white;
 }
 
-.tile{
+.tile, .sol-tile{
 	width: 50px;
 	height: 50px;
 	padding: 8px;
