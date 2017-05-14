@@ -41,12 +41,11 @@ var chancellor = {
 				chancellor.solveTable();				
 			});
 
-		$('#close-btn')
-			.click(function(){
-				$('#chancellor-left').removeClass("s6");
-				$('#chancellor-left').addClass("s12");
-				$('#chancellor-right').hide();		
-			});
+		$('body').on('click', '#close-btn', function(){
+			$('#chancellor-left').removeClass("s6");
+			$('#chancellor-left').addClass("s12");
+			$('#chancellor-right').hide();		
+		});
 
 		$('body').on('click', '.tile', function(){
 			var x = Number($(this).attr('x')),
