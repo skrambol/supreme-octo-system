@@ -15,7 +15,7 @@ var solver = {
 		var i, j, dimension = chancellor.board.length,
 			start, nth_move, solutions_count, tos = [];
 		var move, move_candidate = {row : -1, col : -1}, move_solutions = [];
-		var chancellor_count = chancellor.count, chancellor_board = chancellor.board;
+		var board_solutions = [];
 		console.log("[LOG] Backtracking...");
 
 		start = chancellor.count;
@@ -80,6 +80,7 @@ var solver = {
 						solver.doMove(chancellor.board, chancellor.count, move_candidate, dimension, PLACE_CHANCELLOR);
 
 						solutions_count++;
+						board_solutions.push(JSON.parse(JSON.stringify(chancellor.board)));
 						if (log) console.log("[Solution LOG] solutions_count: " + solutions_count);
 
 						if (log) {
