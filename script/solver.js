@@ -18,30 +18,30 @@ var solver = {
 		var chancellor_count = chancellor.count, chancellor_board = chancellor.board;
 		console.log("[LOG] Backtracking...");
 
-		start = chancellor_count;
+		start = chancellor.count;
 		nth_move = start;
-		log = log_move = true;
+		log = log_move = false;
 		solver.initTos(tos, dimension);
 		solver.initMoveSolutions(move_solutions, dimension);
 		tos[start] = 1;
 		solutions_count = 0;
 
-		if (chancellor_count > dimension) {
+		if (chancellor.count > dimension) {
 			return 0;
 		}
 
-		if (chancellor_count > 0) {
+		if (chancellor.count > 0) {
 			if (log) console.log("[LOG] there is an initial chancellor");
 			var board_temp = [], nth_move_temp = 0;
 
-			chancellor_count = 0;
+			chancellor.count = 0;
 
 			for (i = 0; i < dimension; i++) {
-				if (log) console.log(chancellor_board[i]);
+				if (log) console.log(chancellor.board[i]);
 				board_temp.push([]);
 				for (j = 0; j < dimension; j++) {
-					board_temp[i].push(chancellor_board[i][j]);
-					chancellor_board[i][j] = 0;
+					board_temp[i].push(chancellor.board[i][j]);
+					chancellor.board[i][j] = 0;
 				}
 			}
 
@@ -51,10 +51,10 @@ var solver = {
 				for(j = 0; j < dimension; j++) {
 					if(board_temp[i][j] > 0) {
 						move = solver.initMove(i, j);
-						if(solver.checkMove(board_temp, move, log)) {
+						if(solver.checkMove(chancellor.board, move, log)) {
 							nth_move_temp++;
 							tos[nth_move_temp] = 1;
-							solver.doMove(chancellor_board, chancellor_count, move, dimension, INIT_CHANCELLOR);
+							solver.doMove(chancellor.board, chancellor.count, move, dimension, INIT_CHANCELLOR);
 							move_solutions[nth_move_temp][1] = move;
 							if (log_move) console.log("[LOG] " + nth_move_temp + "-th stack; tos @ " + tos[nth_move_temp] + "; init(" + move.row + ", " + move.col + ")");
 						} else {
@@ -75,29 +75,31 @@ var solver = {
 				if (log) console.log("[LOG] now at " + nth_move + "-th stack");
 
 				if (nth_move == dimension + 1) {
-					if(chancellor_count < dimension) {
+					if(chancellor.count < dimension) {
 						move_candidate = move_solutions[nth_move - 1][tos[nth_move - 1]];
-						solver.doMove(chancellor_board, chancellor_count, move_candidate, dimension, PLACE_CHANCELLOR);
+						solver.doMove(chancellor.board, chancellor.count, move_candidate, dimension, PLACE_CHANCELLOR);
 
 						solutions_count++;
 						if (log) console.log("[Solution LOG] solutions_count: " + solutions_count);
 
-						if (log)
-                    		for(i=start+1; i<=dimension; i++)
+						if (log) {
+                    		for(i=start+1; i<=dimension; i++)         
                         		console.log("[LOG] steps: " + move_solutions[i][tos[i]].row + ", " + move_solutions[i][tos[i]].col + "");
+                        	solver.printBoard(chancellor.board);
+                        }
 					}
 				} else {
 					if (nth_move >= start + 1) {
 						move_candidate = move_solutions[nth_move - 1][tos[nth_move - 1]];
-						if (nth_move > start + 1) solver.doMove(chancellor_board, chancellor_count, move, dimension, PLACE_CHANCELLOR);
+						if (nth_move > start + 1) solver.doMove(chancellor.board, chancellor.count, move_candidate, dimension, PLACE_CHANCELLOR);
 						if (log_move) console.log("[LOG] " + nth_move + "-th stack; tos @ " + tos[nth_move] + "; move(" + move_candidate.row + ", " + move_candidate.col + ")");
 					}
 
 					for (i = dimension - 1; i > -1; i--) {
 						for (j = dimension - 1; j > -1; j--) {
-							if (chancellor_board[i][j] == 0) {
+							if (chancellor.board[i][j] == 0) {
 								move = solver.initMove(i, j);
-								if (solver.checkMove(chancellor_board, move, log) && (nth_move == 1 || solver.isBefore(chancellor_board, dimension, move_candidate, move))) {
+								if (solver.checkMove(chancellor.board, move, log) && (nth_move == 1 || solver.isBefore(chancellor.board, dimension, move_candidate, move))) {
 									tos[nth_move]++;
 									move_solutions[nth_move][tos[nth_move]] = move;
 									if (log_move) console.log("[LOG] " + nth_move + "-th stack; tos @ " + tos[nth_move] + "; add(" + move.row + ", " + move.col + ")");
@@ -110,7 +112,7 @@ var solver = {
 				if(--nth_move == 0) break;
 
 				move_candidate = move_solutions[nth_move][tos[nth_move]];
-				solver.doMove(chancellor_board, chancellor_count, move_candidate, dimension, REMOVE_CHANCELLOR);
+				solver.doMove(chancellor.board, chancellor.count, move_candidate, dimension, REMOVE_CHANCELLOR);
 				if (log_move) console.log("[LOG] " + nth_move + "-th stack; tos @ " + tos[nth_move] + "; undo(" + move_candidate.row + ", " + move_candidate.col + ")");
 
 				tos[nth_move]--;
@@ -142,9 +144,10 @@ var solver = {
 	},
 
 	checkMove : function(board, move, log) {
-		if (log) console.log("[LOG] move at: %d, %d\n", move.row, move.col);
-
-		return (chancellor.checkRookMove(board, move.row, move.col) && chancellor.checkKnightMove(board, move.row, move.col));
+		var rookMove = chancellor.checkRookMove(board, move.row, move.col);
+		var knighMove = chancellor.checkKnightMove(board, move.row, move.col)
+		if (log) console.log("[LOG] move at: " + move.row + ", " + move.col + ", rookMove: " + rookMove + ", knighMove: " + knighMove);
+		return (rookMove && knighMove);
 	},
 
 	doMove : function(board, count, move, dimension, what_move) {
@@ -162,4 +165,18 @@ var solver = {
 			board[move_prev.row][move_prev.col] == INIT_CHANCELLOR || (move_prev.row * dimension + move_prev.col < move_new.row * dimension + move_new.col)
 		);
 	},
+
+	printBoard : function(board) {
+		var dimension = board.length, i, j;
+		var space = " ";
+
+		for (i = 0; i < dimension; i++) {
+			var str = "";
+			for (j = 0; j < dimension; j++) {
+				str += board[i][j] + " ";
+			}
+			console.log(str + space);
+			space += " ";
+		}
+	}
 }

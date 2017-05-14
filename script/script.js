@@ -85,9 +85,15 @@ var chancellor = {
 
 	checkRookMove : function(board, x, y){
 		var arrayColumn = (arr, n) => arr.map(x => x[n]);
+		var i;
 
-		if(~board[x].indexOf(1)) return false;
-		if(~arrayColumn(board, y).indexOf(1)) return false;
+		// if(~board[x].indexOf(1)) return false;
+		// if(~arrayColumn(board, y).indexOf(1)) return false;
+		for(i = 0; i < board.length; i++) {
+			if(board[x][i] > 0 || board[i][y] > 0) {
+				return false;
+			}
+		}
 
 		return true;
 	},
