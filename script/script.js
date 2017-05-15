@@ -89,15 +89,22 @@ var chancellor = {
 				if(chancellor.count == chancellor.board.length && !$('.tile').hasClass('tile-invalid')){
 					swal({
 						title: "YOU WIN",
-						text: "Game Over",
+						text: "Do you want to clear the game board?",
 						type: "success",
+						showCancelButton: true,
 						confirmButtonColor: "#DD6B55",
-						confirmButtonText: "Confirm",
-						closeOnConfirm: false
+						confirmButtonText: "Yes, clear the board!",
+						cancelButtonText: "No, I want to try another answer!",
+						closeOnConfirm: false,
+						closeOnCancel: false
 					},
-					function(){
-						swal.close();
-						$('#reset-btn').click();
+					function(isConfirm){
+						if (isConfirm) {
+							swal.close();
+							$('#reset-btn').click();
+						} else {
+							swal.close();
+						}
 					});
 				}
 
