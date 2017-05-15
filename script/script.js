@@ -84,6 +84,9 @@ var chancellor = {
 				if(chancellor.count > chancellor.board.length){
 					$(this).html("&nbsp;");
 					$(this).removeClass("tile-invalid");
+					chancellor.board[x][y] = 
+						chancellor.board[x][y] == 0 ? 1 : 0;
+					chancellor.count--;
 					return Materialize.toast("You reached the maximum chancellor count.", 2500);
 				}
 
