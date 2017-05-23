@@ -32,6 +32,7 @@ var chancellor = {
                 $('#chancellor-left').addClass("s12");
                 $('#chancellor-right').hide();          
                 chancellor.createTable('#board', chancellor.board.length);  
+                $('#puzzles-pagination').empty();
             });
 
         $('#solve-btn')

@@ -24,10 +24,9 @@ var filereader = {
         var files = event.target.files,
             file = files[0],
             reader = new FileReader(),
-            boards = [[]],
+            boards = [],
             puzzle_count=0,
             puzzle_no=0,
-            boards = [[]],
             dims,
             input,
             i=1;
@@ -45,7 +44,7 @@ var filereader = {
                 }
             }
 
-            chancellor.createTable('#board', boards[0].length, false, boards[0]);
+            $('#solve-btn').removeClass('disabled');
             chancellor.createPagination(puzzle_count, function(index) {
                 chancellor.createTable('#board', boards[index-1].length, false, boards[index-1]);
                 chancellor.solveTable();
