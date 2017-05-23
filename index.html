@@ -1,73 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>N-Chancellors Problem</title>
+    <title>N-Chancellors Problem</title>
 
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<link rel="stylesheet" href="./style/materialize.min.css" />
-	<link rel="stylesheet" href="./style/sweetalert.css" />
-	<link rel="stylesheet" href="./style/style.css" />
-	<link rel="shortcut icon" href="icon.ico" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="./style/materialize.min.css" />
+    <link rel="stylesheet" href="./style/sweetalert.css" />
+    <link rel="stylesheet" href="./style/style.css" />
+    <link rel="shortcut icon" href="icon.ico" />
 
-	<script src="./script/jquery.min.js"></script>
-	<script src="./script/materialize.min.js"></script>
-	<script src="./script/sweetalert.min.js"></script>
-	<script src="./script/materialize-pagination.min.js"></script>
-	<script src="./script/solver.js"></script>
-	<script src="./script/script.js"></script>
+    <script src="./script/jquery.min.js"></script>
+    <script src="./script/materialize.min.js"></script>
+    <script src="./script/sweetalert.min.js"></script>
+    <script src="./script/materialize-pagination.min.js"></script>
+    <script src="./script/filereader.js"></script>
+    <script src="./script/solver.js"></script>
+    <script src="./script/script.js"></script>
 </head>
 <body>
-		<nav id="nav-main">
-			<div class="nav-wrapper">
-				<a id="nav-title" href="#" class="brand-logo center">N-Chancellors Problem</a>
-			</div>
-		</nav>
-		<div id="main-content center">
-			<div class="row">
-				<div id="chancellor-left" class="col s12">
-					<div id="dim-menu" class="col s12">
-						<div class="input-field col s7">
-							<input id="dim-specify" type="text" class="validate center" autocomplete="true">
-							<label for="dim-specify">Dimensions</label>
-						</div>
-						<a id="solve-btn" class="dim-btn waves-effect waves-light btn col s2 right disabled"
-							style="margin-left:4%; margin-top:17px;">SOLVE</a>
-						<a id="reset-btn" class="dim-btn waves-effect waves-light btn col s2 right"
-							style="margin-top:17px;">RESET</a>
-					</div>
-					<div id="board-div" class="col s12 z-depth-2 center valign-wrapper">
-						<div id="board" class="col s12">
-						
-						</div>
-					</div>
-				</div>	
-				<div id="chancellor-right" class="col s6" style="display:none;">
-					<div id="solution-div" class="col s12 z-depth-2">
-						<div>
-							<a id="close-btn" class="dim-btn waves-effect waves-light btn col s2 right">CLOSE</a>
-							<h3 style="margin:0; margin-top:10px;">SOLUTION</h3>
-							<span>There are </span>
-							<span id="sol-count" style="font-weight:bold;">{count}</span>
-							<span>number of solution/s !</span>
-						</div>
-						<div id="sol-board-div" class="col s12 center valign-wrapper">
-							<div id="sol-board" class="col s12">
-							</div>
-						</div>
-						<div class="col s12 center">
-							<ul id="pagination"></ul>
-						</div>
-					</div>
-					<div id="no-solution-div" class="s12 z-depth-2 center" style="display:none;">
-						<a id="close-btn" class="dim-btn waves-effect waves-light btn col s2 right"
-							style="margin-top:17px; margin-right:10px;">CLOSE</a>
-						<br/><br/><br/>
-						<h2>NO</h2><br/>
-						<h2>SOLUTION</h2><br/>
-						<h2>FOUND</h2><br/>
-					</div>
-				</div>	
-			</div>
-		</div>
+        <nav id="nav-main">
+            <div class="nav-wrapper">
+                <a id="nav-title" href="#" class="brand-logo center">N-Chancellors Problem</a>
+            </div>
+        </nav>
+        <div id="main-content center">
+            <div class="row">
+                <div id="chancellor-left" class="col s12">
+                    <div id="dim-menu" class="col s12">
+                        <div class="input-field col s7">
+                            <input id="dim-specify" type="text" class="validate center" autocomplete="true">
+                            <label for="dim-specify">Dimensions</label>
+                        </div>
+                        <a id="solve-btn" class="dim-btn waves-effect waves-light btn col s2 right disabled"
+                            style="margin-left:4%; margin-top:17px;">SOLVE</a>
+                        <a id="reset-btn" class="dim-btn waves-effect waves-light btn col s2 right"
+                            style="margin-top:17px;">RESET</a>
+                    </div>
+                    <div id="board-div" class="col s12 z-depth-2 center valign-wrapper">
+                        <div id="board" class="col s12">
+                        </div>
+                        <div class="col s12 center">
+                            <ul id="puzzles-pagination"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div id="chancellor-right" class="col s6" style="display:none;">
+                    <div id="solution-div" class="col s12 z-depth-2">
+                        <div>
+                            <a id="close-btn" class="dim-btn waves-effect waves-light btn col s2 right">CLOSE</a>
+                            <h3 style="margin:0; margin-top:10px;">SOLUTION</h3>
+                            <span>There are </span>
+                            <span id="sol-count" style="font-weight:bold;">{count}</span>
+                            <span>number of solution/s !</span>
+                        </div>
+                        <div id="sol-board-div" class="col s12 center valign-wrapper">
+                            <div id="sol-board" class="col s12">
+                            </div>
+                        </div>
+                        <div class="col s12 center">
+                            <ul id="pagination"></ul>
+                        </div>
+                    </div>
+                    <div id="no-solution-div" class="s12 z-depth-2 center" style="display:none;">
+                        <a id="close-btn" class="dim-btn waves-effect waves-light btn col s2 right"
+                            style="margin-top:17px; margin-right:10px;">CLOSE</a>
+                        <br/><br/><br/>
+                        <h2>NO</h2><br/>
+                        <h2>SOLUTION</h2><br/>
+                        <h2>FOUND</h2><br/>
+                    </div>
+                </div>  
+            </div>
+        </div>
 </body>
 </html>
